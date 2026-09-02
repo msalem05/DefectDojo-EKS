@@ -30,6 +30,8 @@ echo
 # do the check with Django stack
 python3 manage.py check
 
+mkdir -p /var/run/defectdojo
+
 exec celery --app=dojo \
     beat \
   --pidfile=/var/run/defectdojo/celery-beat.pid \
