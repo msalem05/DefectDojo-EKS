@@ -1,0 +1,5 @@
+apiVersion: v2
+name: defectdojo
+description: Custom DefectDojo Helm chart for AWS EKS
+type: application
+version: 0.1.0
