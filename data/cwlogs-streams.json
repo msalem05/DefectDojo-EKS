@@ -1,0 +1,22 @@
+{
+  "000000000000/us-east-1::/floci/ui::2026/09/20/c644675c" : {
+    "logGroupName" : "/floci/ui",
+    "logStreamName" : "2026/09/20/c644675c",
+    "createdTime" : 1789914804346,
+    "firstEventTimestamp" : 1789914804356,
+    "lastEventTimestamp" : 1792081713431,
+    "lastIngestionTime" : 1792081713432,
+    "uploadSequenceToken" : "fc4b1709-f21a-4234-bd29-81fdb9b91637",
+    "storedBytes" : 499835
+  },
+  "000000000000/us-east-1::/floci/ui::2026/09/12/c644675c" : {
+    "logGroupName" : "/floci/ui",
+    "logStreamName" : "2026/09/12/c644675c",
+    "createdTime" : 1789201047065,
+    "firstEventTimestamp" : 1789201047244,
+    "lastEventTimestamp" : 1789294662064,
+    "lastIngestionTime" : 1789294662064,
+    "uploadSequenceToken" : "ed592df6-f276-496f-8b31-bde5c5a94270",
+    "storedBytes" : 332309
+  }
+}
