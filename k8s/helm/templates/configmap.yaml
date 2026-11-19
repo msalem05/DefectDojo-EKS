@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: defectdojo-config
+data:
+  DD_DATABASE_READINESS_TIMEOUT: "30"
+  DD_UWSGI_MODE: "socket"
+  DD_UWSGI_ENDPOINT: "0.0.0.0:3031"
+  DD_INITIALIZE: "true"
+  DD_ADMIN_USER: "admin"
+  DD_ADMIN_MAIL: "admin@defectdojo.local"
+  DD_ADMIN_FIRST_NAME: "Admin"
+  DD_ADMIN_LAST_NAME: "User"
