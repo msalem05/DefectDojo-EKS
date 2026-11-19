@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uwsgi-deployment
+  labels:
+    app: uwsgi
+spec:
+  replicas: {{ .Values.uwsgi.replicaCount }}
+  selector:
+    matchLabels:
+      app: uwsgi
+  template:
+    metadata:
+      labels:
+        app: uwsgi
+    spec:
+      containers:
+        - name: uwsgi
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMap.name }}
+
+            - secretRef:
+                name: {{ .Values.secrets.existingSecret }}
+
+            - secretRef:
+                name: defectdojo-valkey
+
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+
+          resources:
+            {{- toYaml .Values.uwsgi.resources | nindent 12 }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: uwsgi
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}

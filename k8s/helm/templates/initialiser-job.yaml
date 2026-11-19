@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: initialiser
+spec:
+  backoffLimit: {{ .Values.initializer.backoffLimit }}
+
+  template:
+    spec:
+      restartPolicy: Never
+
+      containers:
+        - name: initialiser
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          command: ["/entrypoint-initializer.sh"]
+
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMap.name }}
+
+            - secretRef:
+                name: {{ .Values.secrets.existingSecret }}
+
+            - secretRef:
+                name: defectdojo-valkey
+
+          resources:
+            {{- toYaml .Values.initializer.resources | nindent 12 }}
