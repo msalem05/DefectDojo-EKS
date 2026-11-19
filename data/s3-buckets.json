@@ -1,0 +1,27 @@
+{
+  "000000000000/eks-project-tfstate" : {
+    "name" : "eks-project-tfstate",
+    "creationDate" : "2026-09-12T08:16:36.198555651Z",
+    "versioningStatus" : "Enabled",
+    "loggingConfiguration" : null,
+    "tags" : { },
+    "notificationConfiguration" : null,
+    "objectLockEnabled" : false,
+    "defaultRetention" : null,
+    "policy" : null,
+    "corsConfiguration" : null,
+    "lifecycleConfiguration" : null,
+    "transitionDefaultMinimumObjectSize" : null,
+    "acl" : null,
+    "encryptionConfiguration" : null,
+    "replicationConfiguration" : null,
+    "publicAccessBlockConfiguration" : null,
+    "ownershipControlsConfiguration" : null,
+    "requestPaymentPayer" : null,
+    "accelerateStatus" : null,
+    "region" : "eu-west-2",
+    "websiteConfiguration" : null,
+    "metricsConfigurations" : null,
+    "versioningEnabled" : true
+  }
+}
