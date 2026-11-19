@@ -1,0 +1,27 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: envoy-http-tgb
+  namespace: envoy-gateway-system
+spec:
+  serviceRef:
+    name: envoy-proxy-config
+    port: 80
+
+  targetGroupARN: HTTP_TARGET_GROUP_ARN
+  targetType: ip
+
+---
+
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: envoy-https-tgb
+  namespace: envoy-gateway-system
+spec:
+  serviceRef:
+    name: envoy-proxy-config
+    port: 443
+
+  targetGroupARN: HTTPS_TARGET_GROUP_ARN
+  targetType: ip
