@@ -1,0 +1,15 @@
+{{- range .Values.targetGroups }}
+---
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: {{ .name }}
+  namespace: envoy-gateway-system
+spec:
+  serviceRef:
+    name: {{ .serviceName }}
+    port: {{ .servicePort }}
+
+  targetGroupARN: {{ .arn | quote }}
+  targetType: {{ .targetType }}
+{{- end }}

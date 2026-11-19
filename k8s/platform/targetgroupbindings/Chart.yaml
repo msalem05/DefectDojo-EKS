@@ -1,0 +1,5 @@
+apiVersion: v2
+name: targetgroupbindings
+description: AWS TargetGroupBindings for Envoy Gateway
+type: application
+version: 0.1.0
