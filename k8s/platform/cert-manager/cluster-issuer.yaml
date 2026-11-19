@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    email: salemmohammed571@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+
+    privateKeySecretRef:
+      name: letsencrypt-prod-account-key
+
+    solvers:
+      - dns01:
+          route53:
+            region: eu-west-2
+            hostedZoneID: Z0193104L78E0NMAKQA5
+
