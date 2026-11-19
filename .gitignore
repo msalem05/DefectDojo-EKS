@@ -162,3 +162,11 @@ MEMORY.md
 .claude/settings.local.json
 CLAUDE.md
 CLAUDE.local.md
+
+#terraform
+
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform.lock.hcl
+.terraform/
