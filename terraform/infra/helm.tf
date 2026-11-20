@@ -119,7 +119,10 @@ resource "helm_release" "argocd_bootstrap" {
   namespace = "argocd"
 
   depends_on = [
-    helm_release.argocd
+    helm_release.argocd,
+    helm_release.cert_manager,
+    helm_release.envoy_gateway,
+    helm_release.external_secrets
   ]
 }
 
