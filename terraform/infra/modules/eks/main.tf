@@ -84,11 +84,6 @@ resource "aws_eks_addon" "pod_identity_agent" {
   addon_name   = "eks-pod-identity-agent"
 }
 
-resource "aws_eks_addon" "csi" {
-  cluster_name = aws_eks_cluster.cluster.name
-  addon_name   = "aws-ebs-csi-driver"
-}
-
 resource "aws_eks_node_group" "bootstrap" {
   cluster_name    = aws_eks_cluster.cluster.name
   node_role_arn   = var.node_role_arn
@@ -109,17 +104,6 @@ resource "aws_eks_pod_identity_association" "vpc_cni" {
   namespace       = var.namespace
   role_arn        = var.vpc_cni_role_arn
   service_account = "aws-node"
-
-  depends_on = [
-    aws_eks_addon.pod_identity_agent
-  ]
-}
-
-resource "aws_eks_pod_identity_association" "ebs_csi" {
-  cluster_name    = aws_eks_cluster.cluster.name
-  namespace       = "external-secrets"
-  role_arn        = var.ebs_csi_role_arn
-  service_account = "ebs-csi-controller-sa"
 
   depends_on = [
     aws_eks_addon.pod_identity_agent
