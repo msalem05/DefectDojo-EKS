@@ -105,10 +105,8 @@ jobs:
 
           git commit -m "ci: update DefectDojo image to $GITHUB_SHA"
 
-          # Fetch the latest main branch in case it changed during the build.
           git fetch origin main
 
-          # Replay our GitOps commit on top of the latest main.
           git rebase origin/main
 
           git push origin HEAD:main
