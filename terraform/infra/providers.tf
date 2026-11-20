@@ -25,14 +25,11 @@ provider "aws" {
 
 provider "helm" {
   kubernetes = {
-    host = module.eks.cluster_endpoint
-
-    cluster_ca_certificate = base64decode(
-      module.eks.cluster_certificate_authority_data
-    )
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
 
     exec = {
-      api_version = "client.authentication.k8s.io/v1"
+      api_version = "client.authentication.k8s.io/v1beta1"
       command     = "aws"
 
       args = [
@@ -41,7 +38,9 @@ provider "helm" {
         "--cluster-name",
         module.eks.cluster_name,
         "--region",
-        "eu-west-2"
+        "eu-west-2",
+        "--role-arn",
+        "arn:aws:iam::622703418024:role/defectdojo-eks-admin"
       ]
     }
   }

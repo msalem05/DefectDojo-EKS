@@ -112,3 +112,45 @@ resource "helm_release" "argocd" {
     module.eks
   ]
 }
+
+resource "helm_release" "argocd_bootstrap" {
+  name      = "argocd-bootstrap"
+  chart     = "${path.module}/../../k8s/bootstrap"
+  namespace = "argocd"
+
+  depends_on = [
+    helm_release.argocd
+  ]
+}
+
+resource "helm_release" "targetgroupbindings" {
+  name      = "targetgroupbindings"
+  chart     = "${path.module}/../../k8s/platform/targetgroupbindings"
+  namespace = "envoy-gateway-system"
+
+  values = [
+    yamlencode({
+      targetGroups = [
+        {
+          name        = "envoy-http-tgb"
+          arn         = module.nlb.http_tg_arn
+          serviceName = "envoy-proxy"
+          servicePort = 80
+          targetType  = "ip"
+        },
+        {
+          name        = "envoy-https-tgb"
+          arn         = module.nlb.https_tg_arn
+          serviceName = "envoy-proxy"
+          servicePort = 443
+          targetType  = "ip"
+        }
+      ]
+    })
+  ]
+
+  depends_on = [
+    helm_release.aws_load_balancer_controller,
+    helm_release.envoy_gateway
+  ]
+}

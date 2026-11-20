@@ -38,7 +38,6 @@ module "nlb" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.public_subnet_id
   nlb_sg_id  = module.vpc.nlb_sg_id
-  # certificate_arn =  module.acm.certificate_arn
 }
 
 module "iam" {
@@ -47,20 +46,8 @@ module "iam" {
   route53_hosted_zone_id = module.route53.route53_hosted_zone_id
 }
 
-# module "acm" {
-#   source = "./modules/acm" 
-# }
-
-# module "acm_validation" {
-#   source = "./modules/acm_validation"
-#   acm_certificate_arn =  module.acm.certificate_arn
-#   dns_validation_record = module.route53.acm_validation_fqdn
-# }
-
 module "route53" {
   source       = "./modules/route53"
   nlb_dns_name = module.nlb.nlb_dns_name
   nlb_zone_id  = module.nlb.nlb_zone_id
-  # acm_validation_name =  module.acm.acm_validation_name
-  # acm_validation_record = module.acm.acm_validation_record
 }
