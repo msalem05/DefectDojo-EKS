@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: initialiser
+
 spec:
   backoffLimit: {{ .Values.initializer.backoffLimit }}
 
@@ -21,10 +22,32 @@ spec:
                 name: {{ .Values.configMap.name }}
 
             - secretRef:
-                name: {{ .Values.secrets.existingSecret }}
-
-            - secretRef:
                 name: defectdojo-valkey
+
+          env:
+            - name: DD_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-secret
+                  key: db_url
+
+            - name: DD_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dd-secret-key-secret
+                  key: dd_secret_key
+
+            - name: DD_AES_256_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aes-256-key-secret
+                  key: aes_256_key
+
+            - name: DD_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: admin-password-secret
+                  key: admin_pw
 
           resources:
             {{- toYaml .Values.initializer.resources | nindent 12 }}
