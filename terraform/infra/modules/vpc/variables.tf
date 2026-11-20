@@ -67,3 +67,7 @@ variable "eks_node_sg_name" {
   type    = string
   default = "defectdojo-eks-node-sg"
 }
+
+variable "cluster_sg_id" {
+  type = string
+}

@@ -49,11 +49,7 @@ jobs:
         run: |
           IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA"
 
-          echo "Building image: $IMAGE_URI"
-
-          docker build \
-            -t "$IMAGE_URI" \
-            .
+          docker build -t $IMAGE_URI .
 
       - name: Install Grype
         uses: anchore/scan-action/download-grype@v6

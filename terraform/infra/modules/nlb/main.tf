@@ -7,7 +7,7 @@ resource "aws_lb" "nlb" {
 
 resource "aws_lb_target_group" "nlb_tg_https" {
   name        = var.tg_name
-  port        = 443
+  port        = 10443
   protocol    = "TCP"
   vpc_id      = var.vpc_id
   target_type = "ip"
@@ -15,7 +15,7 @@ resource "aws_lb_target_group" "nlb_tg_https" {
   health_check {
     enabled = true 
     protocol = "TCP"
-    port = 443
+    port = 10443
   }
 
 }
@@ -33,7 +33,7 @@ resource "aws_lb_listener" "nlb_listener" {
 
 resource "aws_lb_target_group" "nlb_http_tg" {
   name        = var.nlb_http_tg_name
-  port        = 80
+  port        = 10080
   protocol    = "TCP"
   vpc_id      = var.vpc_id
   target_type = "ip"
@@ -41,7 +41,7 @@ resource "aws_lb_target_group" "nlb_http_tg" {
   health_check {
     enabled = true 
     protocol = "TCP"
-    port = 80
+    port = 10080
   }
 }
 

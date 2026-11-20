@@ -40,3 +40,11 @@ variable "lb_controller_policy" {
 variable "route53_hosted_zone_id" {
   type = string
 }
+
+variable "rds_master_secret_arn" {
+  type = string
+}
+
+variable "rds_connection_secret_arn" {
+  type = string
+}

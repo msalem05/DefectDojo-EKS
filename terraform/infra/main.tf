@@ -4,7 +4,7 @@ module "vpc" {
   public_subnet_cidr  = var.public_subnet_cidr
   private_subnet_cidr = var.private_subnet_cidr
   az                  = var.az
-
+  cluster_sg_id = module.eks.cluster_sg_id
 }
 
 module "eks" {
@@ -44,6 +44,8 @@ module "iam" {
   source              = "./modules/iam"
   valkey_endpoint_arn = module.valkey.valkey_endpoint_arn
   route53_hosted_zone_id = module.route53.route53_hosted_zone_id
+  rds_connection_secret_arn = module.rds.db_address 
+  rds_master_secret_arn = module.rds.master_secret_arn
 }
 
 module "route53" {

@@ -130,28 +130,46 @@ data "aws_secretsmanager_secret" "aes" {
   name = "defectdojo/aes-256-key"
 }
 
+data "aws_secretsmanager_secret" "database_url" {
+  name = "defectdojo/database-url"
+}
+
 resource "aws_iam_policy" "eso" {
   name = "${var.eso_role_name}-policy"
 
   policy = jsonencode({
     Version = "2012-10-17"
 
-    Statement = [{
-      Effect = "Allow"
+    Statement = [
+      {
+        Sid    = "ReadSecretsManager"
+        Effect = "Allow"
 
-      Action = [
-        "secretsmanager:GetSecretValue",
-        "secretsmanager:DescribeSecret",
-        "ssm:GetParameter"
-      ]
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
 
-      Resource = [
-        data.aws_secretsmanager_secret.dd-secret-key.arn,
-        data.aws_secretsmanager_secret.admin-password.arn,
-        data.aws_secretsmanager_secret.aes.arn,
-        var.valkey_endpoint_arn
-      ]
-    }]
+        Resource = [
+          data.aws_secretsmanager_secret.dd-secret-key.arn,
+          data.aws_secretsmanager_secret.admin-password.arn,
+          data.aws_secretsmanager_secret.aes.arn,
+          data.aws_secretsmanager_secret.database_url.arn
+        ]
+      },
+      {
+        Sid    = "ReadValkeyParameter"
+        Effect = "Allow"
+
+        Action = [
+          "ssm:GetParameter"
+        ]
+
+        Resource = [
+          var.valkey_endpoint_arn
+        ]
+      }
+    ]
   })
 }
 

@@ -103,10 +103,37 @@ resource "aws_security_group_rule" "nlb_ingress_https" {
 resource "aws_security_group_rule" "nlb_egress_envoy" {
   type              = "egress"
   security_group_id = aws_security_group.nlb.id
-  from_port         = 443
-  to_port           = 443
+  from_port         = 10443
+  to_port           = 10443
   cidr_blocks       = [var.vpc_cidr]
   protocol          = "tcp"
+}
+
+resource "aws_security_group_rule" "nlb_egress_envoy_http" {
+  type              = "egress"
+  security_group_id = aws_security_group.nlb.id
+  from_port         = 10080
+  to_port           = 10080
+  cidr_blocks       = [var.vpc_cidr]
+  protocol          = "tcp"
+}
+
+resource "aws_security_group_rule" "nlb_to_envoy_https" {
+  type                     = "ingress"
+  security_group_id        = var.cluster_sg_id
+  source_security_group_id = aws_security_group.nlb.id
+  from_port                = 10443
+  to_port                  = 10443
+  protocol                 = "tcp"
+}
+
+resource "aws_security_group_rule" "nlb_to_envoy_http" {
+  type                     = "ingress"
+  security_group_id        = var.cluster_sg_id
+  source_security_group_id = aws_security_group.nlb.id
+  from_port                = 10080
+  to_port                  = 10080
+  protocol                 = "tcp"
 }
 
 resource "aws_security_group" "eks_node" {
@@ -169,7 +196,7 @@ resource "aws_security_group_rule" "eks_node_db_ingress" {
   security_group_id        = aws_security_group.db_sg.id
   from_port                = var.db_port
   to_port                  = var.db_port
-  source_security_group_id = aws_security_group.eks_node.id
+  source_security_group_id = var.cluster_sg_id
   protocol                 = "tcp"
 }
 
@@ -184,5 +211,5 @@ resource "aws_security_group_rule" "eks_node_valkey_ingress" {
   from_port                = var.valkey_port
   to_port                  = var.valkey_port
   protocol                 = "tcp"
-  source_security_group_id = aws_security_group.eks_node.id
+  source_security_group_id = var.cluster_sg_id
 }
