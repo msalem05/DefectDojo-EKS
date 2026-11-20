@@ -1,0 +1,120 @@
+name: Docker Build, Scan and Push
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Dockerfile"
+      - "docker/**"
+      - "scripts/update-image.sh"
+      - ".github/workflows/docker-cicd.yml"
+
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write
+
+concurrency:
+  group: defectdojo-image-deployment
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-2
+  ECR_REPOSITORY: defectdojo-eks-repo
+  AWS_ROLE_ARN: arn:aws:iam::622703418024:role/ci_oidc_role
+
+jobs:
+  build-and-push:
+    name: Build, Scan, Push and Update GitOps
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Authenticate to AWS using OIDC
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA"
+
+          echo "Building image: $IMAGE_URI"
+
+          docker build \
+            -t "$IMAGE_URI" \
+            .
+
+      - name: Install Grype
+        uses: anchore/scan-action/download-grype@v6
+
+      - name: Scan Docker image with Grype
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA"
+
+          grype "$IMAGE_URI" \
+            --fail-on high
+
+      - name: Push Docker image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA"
+
+          docker push "$IMAGE_URI"
+
+      - name: Install yq
+        run: |
+          YQ_VERSION="v4.45.1"
+
+          sudo curl -fsSL \
+            "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" \
+            -o /usr/local/bin/yq
+
+          sudo chmod +x /usr/local/bin/yq
+
+          yq --version
+
+      - name: Update Helm image values
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA"
+
+          bash scripts/update-image.sh "$IMAGE_URI"
+
+      - name: Commit updated Helm values
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add k8s/helm/values.yaml
+
+          if git diff --cached --quiet; then
+            echo "No changes detected."
+            exit 0
+          fi
+
+          git commit -m "ci: update DefectDojo image to $GITHUB_SHA"
+
+          # Fetch the latest main branch in case it changed during the build.
+          git fetch origin main
+
+          # Replay our GitOps commit on top of the latest main.
+          git rebase origin/main
+
+          git push origin HEAD:main
